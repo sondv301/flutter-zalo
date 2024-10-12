@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.zunsakai.flutter_zalo.flutter_zalo">
+    <queries>
+        <package android:name="com.zing.zalo" />
+    </queries>
+</manifest>
