@@ -11,6 +11,11 @@
 
 This package is only compatible with Zalo SDK V4. Documentation can be found [here](https://developers.zalo.me/).
 
+<div align="center">
+  <img height="500px" src="https://raw.githubusercontent.com/zunsakai/flutter-zalo/refs/heads/master/example/android.gif" style="margin-right: 16px;" />
+  <img height="500px" src="https://raw.githubusercontent.com/zunsakai/flutter-zalo/refs/heads/master/example/ios.gif" />
+</div>
+
 # 1. Installation
 Run this command:
 ```
@@ -25,14 +30,17 @@ Go to this page: https://developers.zalo.me and create account/new app
 To make this plugin working we need to have there key:
 
 - `APP ID` (Tổng quan > Cài đặt > Thông tin ứng dụng > ID ứng dụng)
-- `Android Hash Key`: To get the hash key, you can launch the application for the first time and call the `init` function. See the [example](example/lib/main.dart), you will see it in the console log.
-```
-V/FlutterZaloPlugin( 3701): ---------------------------------------------------------------------------
-V/FlutterZaloPlugin( 3701): |     Please add this Hash Key to Zalo developers dashboard for Login     |
-V/FlutterZaloPlugin( 3701): |     Hash Key: tlarAZPUbHceciRA2NhnwMixCBI=                              |
-V/FlutterZaloPlugin( 3701): ---------------------------------------------------------------------------
-```
-Config your Package name and Hash key on Zalo dashboard
+- `Android Hash Key`:
+  - On debug mode: To get the hash key, you can launch the application for the first time and call the `init` function. See the [example](example/lib/main.dart), you will see it in the console log.
+    ```
+    V/FlutterZaloPlugin( 3701): ---------------------------------------------------------------------------
+    V/FlutterZaloPlugin( 3701): |     Please add this Hash Key to Zalo developers dashboard for Login     |
+    V/FlutterZaloPlugin( 3701): |     Hash Key: tlarAZPUbHceciRA2NhnwMixCBI=                              |
+    V/FlutterZaloPlugin( 3701): ---------------------------------------------------------------------------
+    ```
+  - On production mode: #TODO
+
+Config your Package name and Hash key on Zalo dashboard:
 <div align="center">
   <img src="https://raw.githubusercontent.com/zunsakai/flutter-zalo/refs/heads/master/android-config.png" />
 </div>
@@ -131,10 +139,88 @@ If you already have a `MainApplication.kt` file, you can add the following code 
 ZaloSDKApplication.wrap(this);
 ```
 
-## 2.2 Setup for iOS
+## 2.3 Setup for iOS
 
-#TODO
+To make this plugin working we need to have there key:
 
+- `APP ID` (Tổng quan > Cài đặt > Thông tin ứng dụng > ID ứng dụng)
+
+Config your BundleIDy on Zalo dashboard:
+<div align="center">
+  <img src="https://raw.githubusercontent.com/zunsakai/flutter-zalo/refs/heads/master/ios-config.png" />
+</div>
+
+### 2.3.1 Modify Info.plist
+Open `/ios/Runner/Info.plist` and add the following code, replace `[YOUR-APP-ID]` with your App ID above.
+
+```xml
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>zalo</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>zalo-[YOUR-APP-ID]</string>
+            </array>
+        </dict>
+    </array>
+    <key>ZaloAppID</key>
+    <string>[YOUR-APP-ID]</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>zalosdk</string>
+        <string>zaloshareext</string>
+    </array>
+```
+
+### 2.3.2 Modify AppDelegate.swift
+Open `ios/Runner/AppDelegate.swift` and add the following code.
+
+From:
+```swift
+import UIKit
+import Flutter
+
+@main
+@objc class AppDelegate: FlutterAppDelegate {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    GeneratedPluginRegistrant.register(with: self)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+```
+
+To
+```swift
+import Flutter
+import UIKit
+import ZaloSDK
+
+@main
+@objc class AppDelegate: FlutterAppDelegate {
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        GeneratedPluginRegistrant.register(with: self)
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    override func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        /// 0b. Receive callback from zalo
+        return ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+    }
+}
+```
 # 3. Usage
 Import the package
 ```dart
@@ -154,7 +240,6 @@ Get access token
 ```dart
 void getAccessToken() async {
   String? accessToken = await FlutterZalo().getAccessToken();
-  print('getAccessToken: $accessToken');
 }
 ```
 
@@ -162,7 +247,6 @@ Refresh access token
 ```dart
 void refreshAccessToken() async {
   bool? isRefreshed = await FlutterZalo().refreshAccessToken();
-  print('refreshAccessToken: $isRefreshed');
 }
 ```
 
@@ -170,7 +254,6 @@ Get profile
 ```dart
 void getProfile() async {
   Map<String, dynamic>? profile = await FlutterZalo().getProfile();
-  print('getProfile: $profile');
   // {id: 2415874209616155291, name: Bob, pictureUrl: https://s240-ava-talk.zadn.vn/a/4/d/8/1/240/33909c5ec2fff7dd3a83e683a934a904.jpg}
 }
 ```

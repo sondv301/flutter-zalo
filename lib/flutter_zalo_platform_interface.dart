@@ -9,7 +9,7 @@ abstract class FlutterZaloAPI {
     _instance = instance;
   }
 
-  Future<String?> init() {
+  Future<void> init() {
     throw UnimplementedError('init() has not been implemented.');
   }
 
@@ -23,10 +23,6 @@ abstract class FlutterZaloAPI {
 
   Future<String?> getAccessToken() {
     throw UnimplementedError('getAccessToken() has not been implemented.');
-  }
-
-  Future<bool?> isRefreshAccessTokenValid() {
-    throw UnimplementedError('isRefreshAccessTokenValid() has not been implemented.');
   }
 
   Future<bool?> refreshAccessToken() {

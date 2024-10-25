@@ -10,8 +10,8 @@ class MethodChannelFlutterZalo extends FlutterZaloAPI {
   final methodChannel = const MethodChannel('flutter_zalo');
 
   @override
-  Future<String?> init() async {
-    return await methodChannel.invokeMethod<String>('init');
+  Future<void> init() async {
+    await methodChannel.invokeMethod<void>('init');
   }
 
   @override
@@ -27,11 +27,6 @@ class MethodChannelFlutterZalo extends FlutterZaloAPI {
   @override
   Future<String?> getAccessToken() async {
     return await methodChannel.invokeMethod<String>('getAccessToken');
-  }
-
-  @override
-  Future<bool?> isRefreshAccessTokenValid() async {
-    return await methodChannel.invokeMethod<bool>('isRefreshAccessTokenValid');
   }
 
   @override

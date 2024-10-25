@@ -7,8 +7,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Flutter Zalo',
+      home: MyHomePage(title: 'Flutter Zalo'),
     );
   }
 }
@@ -25,127 +25,118 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   FlutterZalo flutterZalo = FlutterZalo();
 
-  void init() async {
-    await flutterZalo.init();
+  @override
+  void initState() {
+    super.initState();
+    flutterZalo.init();
+  }
+
+  showMessage(String msg) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+    ));
+    print(msg);
   }
 
   void logIn() async {
-    await flutterZalo.logIn();
+    bool? result = await flutterZalo.logIn();
+    showMessage(result! ? "Logged in" : "Failed to log in");
   }
 
   void isAccessTokenValid() async {
     bool? isValid = await flutterZalo.isAccessTokenValid();
-    print('isAccessTokenValid: $isValid');
+    showMessage("Is access token valid:\n$isValid");
   }
 
   void getAccessToken() async {
     String? accessToken = await flutterZalo.getAccessToken();
-    print('getAccessToken: $accessToken');
-  }
-
-  void isRefreshAccessTokenValid() async {
-    bool? isValid = await flutterZalo.isRefreshAccessTokenValid();
-    print('isRefreshAccessTokenValid: $isValid');
+    showMessage("Access Token:\n$accessToken");
   }
 
   void refreshAccessToken() async {
     bool? isRefreshed = await flutterZalo.refreshAccessToken();
-    print('refreshAccessToken: $isRefreshed');
+    showMessage("Refreshed access token:\n$isRefreshed");
   }
 
   void getProfile() async {
     Map<String, dynamic>? profile = await flutterZalo.getProfile();
-    print('getProfile: $profile');
+    showMessage("Profile:\n$profile");
   }
 
   void logOut() async {
     bool? isLoggedOut = await flutterZalo.logOut();
-    print('logOut: $isLoggedOut');
+    showMessage(isLoggedOut! ? "Logged out" : "Failed to log out");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const VerticalDivider(),
-            TextButton(
-              onPressed: init,
-              child: const Text(
-                "init",
-                style: TextStyle(color: Colors.red),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const VerticalDivider(),
+              TextButton(
+                onPressed: logIn,
+                child: const Text(
+                  "logIn",
+                  style: TextStyle(color: Colors.red),
+                ),
+                // color: Theme.of(context).accentColor,
               ),
-              // color: Theme.of(context).accentColor,
-            ),
-            const VerticalDivider(),
-            TextButton(
-              onPressed: logIn,
-              child: const Text(
-                "logIn",
-                style: TextStyle(color: Colors.red),
+              const VerticalDivider(),
+              TextButton(
+                onPressed: isAccessTokenValid,
+                child: const Text(
+                  "isAccessTokenValid",
+                  style: TextStyle(color: Colors.red),
+                ),
+                // color: Theme.of(context).accentColor,
               ),
-              // color: Theme.of(context).accentColor,
-            ),
-            const VerticalDivider(),
-            TextButton(
-              onPressed: isAccessTokenValid,
-              child: const Text(
-                "isAccessTokenValid",
-                style: TextStyle(color: Colors.red),
+              const VerticalDivider(),
+              TextButton(
+                onPressed: getAccessToken,
+                child: const Text(
+                  "getAccessToken",
+                  style: TextStyle(color: Colors.red),
+                ),
+                // color: Theme.of(context).accentColor,
               ),
-              // color: Theme.of(context).accentColor,
-            ),
-            const VerticalDivider(),
-            TextButton(
-              onPressed: getAccessToken,
-              child: const Text(
-                "getAccessToken",
-                style: TextStyle(color: Colors.red),
+              const VerticalDivider(),
+              TextButton(
+                onPressed: refreshAccessToken,
+                child: const Text(
+                  "refreshAccessToken",
+                  style: TextStyle(color: Colors.red),
+                ),
+                // color: Theme.of(context).accentColor,
               ),
-              // color: Theme.of(context).accentColor,
-            ),
-            const VerticalDivider(),
-            TextButton(
-              onPressed: isRefreshAccessTokenValid,
-              child: const Text(
-                "isRefreshAccessTokenValid",
-                style: TextStyle(color: Colors.red),
+              const VerticalDivider(),
+              TextButton(
+                onPressed: getProfile,
+                child: const Text(
+                  "getProfile",
+                  style: TextStyle(color: Colors.red),
+                ),
+                // color: Theme.of(context).accentColor,
               ),
-              // color: Theme.of(context).accentColor,
-            ),
-            const VerticalDivider(),
-            TextButton(
-              onPressed: refreshAccessToken,
-              child: const Text(
-                "refreshAccessToken",
-                style: TextStyle(color: Colors.red),
+              const VerticalDivider(),
+              TextButton(
+                onPressed: logOut,
+                child: const Text(
+                  "logOut",
+                  style: TextStyle(color: Colors.red),
+                ),
+                // color: Theme.of(context).accentColor,
               ),
-              // color: Theme.of(context).accentColor,
-            ),
-            const VerticalDivider(),
-            TextButton(
-              onPressed: getProfile,
-              child: const Text(
-                "getProfile",
-                style: TextStyle(color: Colors.red),
-              ),
-              // color: Theme.of(context).accentColor,
-            ),
-            const VerticalDivider(),
-            TextButton(
-              onPressed: logOut,
-              child: const Text(
-                "logOut",
-                style: TextStyle(color: Colors.red),
-              ),
-              // color: Theme.of(context).accentColor,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

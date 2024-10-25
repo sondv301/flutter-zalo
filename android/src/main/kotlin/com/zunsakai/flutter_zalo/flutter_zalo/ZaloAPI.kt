@@ -14,6 +14,7 @@ import com.zing.zalo.zalosdk.oauth.model.ErrorResponse
 import com.zunsakai.flutter_zalo.flutter_zalo.data.AppStorage
 import com.zunsakai.flutter_zalo.flutter_zalo.data.UserData
 import org.json.JSONObject
+import io.flutter.plugin.common.MethodChannel.Result
 
 class ZaloAPI {
     private val LOG_TAG = ZaloAPI::class.java.simpleName
@@ -24,29 +25,40 @@ class ZaloAPI {
         this.context = context
     }
 
-    fun logIn(activity: Activity) {
+    fun logIn(result: Result, activity: Activity) {
         logout()
         Utilities.genNewCode()
+
         ZaloSDK.Instance.authenticateZaloWithAuthenType(
             activity,
             LoginVia.APP_OR_WEB,
             Utilities.code_challenge,
-            listener
+            object : OAuthCompleteListener() {
+                override fun onAuthenError(response: ErrorResponse) {
+                    super.onAuthenError(response)
+                    result.success(false)
+                    Log.e(LOG_TAG, "Login failed: ${response.errorCode} - ${response.errorMsg}")
+                }
+
+                override fun onGetOAuthComplete(response: OauthResponse) {
+                    super.onGetOAuthComplete(response)
+                    ZaloSDK.Instance.getAccessTokenByOAuthCode(
+                        context, response.oauthCode, Utilities.code_verifier,
+                        ZaloOpenAPICallback { data ->
+                            val err = data.optInt("extCode", ZaloOAuthResultCode.ERR_UNKNOWN_ERROR)
+                            if (err != 0) {
+                                val msg = data.optString("errorMsg", "")
+                                Log.e(LOG_TAG, "Login failed: $msg")
+                                result.success(false)
+                            } else {
+                                saveTokenData(data)
+                                result.success(true)
+                            }
+                        }
+                    )
+                }
+            }
         )
-    }
-
-    private val listener: OAuthCompleteListener = object : OAuthCompleteListener() {
-        override fun onAuthenError(response: ErrorResponse) {
-            super.onAuthenError(response)
-            Log.e(LOG_TAG, "Login failed: ${response.errorCode} - ${response.errorMsg}")
-        }
-
-        override fun onGetOAuthComplete(response: OauthResponse) {
-            super.onGetOAuthComplete(response)
-            ZaloSDK.Instance.getAccessTokenByOAuthCode(
-                context, response.oauthCode, Utilities.code_verifier, onResult
-            )
-        }
     }
 
     private fun saveTokenData(data: JSONObject) {
@@ -75,16 +87,6 @@ class ZaloAPI {
         }
     }
 
-    private var onResult = ZaloOpenAPICallback { data ->
-        val err = data.optInt("extCode", ZaloOAuthResultCode.ERR_UNKNOWN_ERROR)
-        if (err != 0) {
-            val msg = data.optString("errorMsg", "")
-            Log.e(LOG_TAG, "Login failed: $msg")
-        } else {
-            saveTokenData(data)
-        }
-    }
-
     fun isAccessTokenValid(): Boolean {
         val accessToken = AppStorage.getInstance(context).getAccessToken()
         val timeExpire = AppStorage.getInstance(context).getExpiresIn()
@@ -102,35 +104,51 @@ class ZaloAPI {
         return !TextUtils.isEmpty(refreshToken) && timeExpire > System.currentTimeMillis()
     }
 
-    fun refreshAccessToken(): Boolean {
+    fun refreshAccessToken(result: Result) {
         try {
             if (!isRefreshAccessTokenValid()) {
-                return false
+                result.success(false)
+                return
             }
             ZaloSDK.Instance.getAccessTokenByRefreshToken(
                 context,
                 AppStorage.getInstance(context).getRefreshToken(),
-                onResult
+                ZaloOpenAPICallback { data ->
+                    val err = data.optInt("extCode", ZaloOAuthResultCode.ERR_UNKNOWN_ERROR)
+                    if (err != 0) {
+                        val msg = data.optString("errorMsg", "")
+                        Log.e(LOG_TAG, "Login failed: $msg")
+                        result.success(false)
+                    } else {
+                        saveTokenData(data)
+                        result.success(true)
+                    }
+                }
             )
-            return true
         } catch (_: Exception) {
-            return false
+            result.success(false)
         }
     }
 
-    fun getProfile(callback: (UserData) -> Unit) {
+    fun getProfile(callback: (UserData?) -> Unit) {
         val accessToken = getAccessToken()
         if (accessToken == null) {
             Log.e(LOG_TAG, "Access token is empty")
+            callback(null)
             return
         }
         val fields =
             arrayOf("id", "picture.type(large)", "name")
-        ZaloSDK.Instance.getProfile(context, accessToken,
+        ZaloSDK.Instance.getProfile(
+            context, accessToken,
             { data ->
-                mUserData = UserData()
-                mUserData?.fromJson(data)
-                callback(mUserData!!)
+                if (data == null) {
+                    callback(null)
+                } else {
+                    mUserData = UserData()
+                    mUserData?.fromJson(data)
+                    callback(mUserData!!)
+                }
             }, fields
         )
     }

@@ -2,6 +2,7 @@ package com.zunsakai.flutter_zalo.flutter_zalo
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.util.Log
 import com.zing.zalo.zalosdk.core.helper.AppInfo.getApplicationHashKey
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -57,33 +58,35 @@ class FlutterZaloPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             result.error("Error", "Activity is null", null)
             return
         }
-
+        val isDebuggable: Boolean =
+            (this.context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         this.result = result
         when (call.method) {
             "init" -> {
-                val hashkey = getApplicationHashKey(context);
-                Log.v(
-                    LOG_TAG,
-                    "---------------------------------------------------------------------------"
-                );
-                Log.v(
-                    LOG_TAG,
-                    "|     Please add this Hash Key to Zalo developers dashboard for Login     |"
-                );
-                Log.v(LOG_TAG, "|     Hash Key: $hashkey                              |");
-                Log.v(
-                    LOG_TAG,
-                    "---------------------------------------------------------------------------"
-                );
-                result.success(hashkey);
+                if (isDebuggable) {
+                    val hashkey = getApplicationHashKey(context);
+                    Log.v(
+                        LOG_TAG,
+                        "---------------------------------------------------------------------------"
+                    );
+                    Log.v(
+                        LOG_TAG,
+                        "|     Please add this Hash Key to Zalo developers dashboard for Login     |"
+                    );
+                    Log.v(LOG_TAG, "|     Hash Key: $hashkey                              |");
+                    Log.v(
+                        LOG_TAG,
+                        "---------------------------------------------------------------------------"
+                    );
+                }
+                result.success(1);
             }
 
             "logIn" -> {
                 try {
-                    zaloAPI?.logIn(activity!!)
-                    result.success(true)
+                    zaloAPI?.logIn(result, activity!!)
                 } catch (e: Exception) {
-                    result.error("Error", e.message, null)
+                    result.success(false)
                 }
             }
 
@@ -95,22 +98,22 @@ class FlutterZaloPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(zaloAPI?.getAccessToken())
             }
 
-            "isRefreshAccessTokenValid" -> {
-                result.success(zaloAPI?.isRefreshAccessTokenValid())
-            }
-
             "refreshAccessToken" -> {
-                result.success(zaloAPI?.refreshAccessToken())
+                zaloAPI?.refreshAccessToken(result)
             }
 
             "getProfile" -> {
                 zaloAPI?.getProfile { userData ->
-                    val profile = mapOf<String, Any>(
-                        "id" to userData.getId(),
-                        "name" to userData.getName(),
-                        "pictureUrl" to userData.getPictureUrl()
-                    )
-                    result.success(profile)
+                    if (userData != null) {
+                        val profile = mapOf<String, Any>(
+                            "id" to userData.getId(),
+                            "name" to userData.getName(),
+                            "pictureUrl" to userData.getPictureUrl()
+                        )
+                        result.success(profile)
+                    } else {
+                        result.success(null)
+                    }
                 }
             }
 

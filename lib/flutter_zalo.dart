@@ -1,7 +1,7 @@
 import 'flutter_zalo_platform_interface.dart';
 
 class FlutterZalo {
-  Future<String?> init() {
+  Future<void> init() {
     return FlutterZaloAPI.instance.init();
   }
 
@@ -15,10 +15,6 @@ class FlutterZalo {
 
   Future<String?> getAccessToken() {
     return FlutterZaloAPI.instance.getAccessToken();
-  }
-
-  Future<bool?> isRefreshAccessTokenValid() {
-    return FlutterZaloAPI.instance.isRefreshAccessTokenValid();
   }
 
   Future<bool?> refreshAccessToken() {
