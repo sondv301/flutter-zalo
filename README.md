@@ -16,6 +16,25 @@ This package is only compatible with Zalo SDK V4. Documentation can be found [he
   <img height="500px" src="https://raw.githubusercontent.com/zunsakai/flutter-zalo/refs/heads/master/example/ios.gif" />
 </div>
 
+
+<!-- TOC depthFrom:1 depthTo:3 -->
+- [Installation](#1-installation)
+- [Setup](#2-setup)
+  - [Create an application](#21-create-an-application)
+  - [Setup for Android](#22-setup-for-android)
+    - [Modify AndroidManifest.xml](#221-modify-androidmanifestxml)
+    - [Create a new file `strings.xml`](#222-create-a-new-file-stringsxml)
+    - [Modify MainActivity](#223-modify-mainactivity)
+    - [Create a new file `MainApplication.kt`](#224-create-a-new-file-mainapplicationkt)
+  - [Setup for iOS](#23-setup-for-ios)
+    - [Modify Info.plist](#231-modify-infoplist)
+    - [Modify AppDelegate.swift](#232-modify-appdelegateswift)
+- [Usage](#3-usage)
+  - [Login with Zalo](#31-login-with-zalo)
+
+
+<!-- /TOC -->
+
 # 1. Installation
 Run this command:
 ```
