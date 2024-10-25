@@ -31,14 +31,17 @@ To make this plugin working we need to have there key:
 
 - `APP ID` (Tổng quan > Cài đặt > Thông tin ứng dụng > ID ứng dụng)
 - `Android Hash Key`:
-  - On debug mode: To get the hash key, you can launch the application for the first time and call the `init` function. See the [example](example/lib/main.dart), you will see it in the console log.
+  - On **DEBUG** mode: To get the hash key, you can launch the application for the first time and call the `init` function. See the [example](example/lib/main.dart), you will see it in the console log.
     ```
     V/FlutterZaloPlugin( 3701): ---------------------------------------------------------------------------
     V/FlutterZaloPlugin( 3701): |     Please add this Hash Key to Zalo developers dashboard for Login     |
     V/FlutterZaloPlugin( 3701): |     Hash Key: tlarAZPUbHceciRA2NhnwMixCBI=                              |
     V/FlutterZaloPlugin( 3701): ---------------------------------------------------------------------------
     ```
-  - On production mode: #TODO
+  - On **PRODUCTION** mode: Use keytool for generate hash key
+    ```
+    keytool -exportcert -alias YOUR_KEY_ALIAS -keystore /path/to/your/keystore/my-release-key.keystore | openssl sha1 -binary | openssl base64
+    ```
 
 Config your Package name and Hash key on Zalo dashboard:
 <div align="center">
