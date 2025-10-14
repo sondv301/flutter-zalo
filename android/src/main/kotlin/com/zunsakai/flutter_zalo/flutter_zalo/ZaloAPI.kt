@@ -31,7 +31,7 @@ class ZaloAPI {
 
         ZaloSDK.Instance.authenticateZaloWithAuthenType(
             activity,
-            LoginVia.APP_OR_WEB,
+            LoginVia.WEB,
             Utilities.code_challenge,
             object : OAuthCompleteListener() {
                 override fun onAuthenError(response: ErrorResponse) {
