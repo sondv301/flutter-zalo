@@ -5,8 +5,8 @@ class FlutterZalo {
     return FlutterZaloAPI.instance.init();
   }
 
-  Future<bool?> logIn() {
-    return FlutterZaloAPI.instance.logIn();
+  Future<bool?> logIn({String? type}) {
+    return FlutterZaloAPI.instance.logIn(type: type);
   }
 
   Future<bool?> isAccessTokenValid() {

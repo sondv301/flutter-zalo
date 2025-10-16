@@ -13,7 +13,7 @@ abstract class FlutterZaloAPI {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  Future<bool?> logIn() {
+  Future<bool?> logIn({String? type}) {
     throw UnimplementedError('logIn() has not been implemented.');
   }
 

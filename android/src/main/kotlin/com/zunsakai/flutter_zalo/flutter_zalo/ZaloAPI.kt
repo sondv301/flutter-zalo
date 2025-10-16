@@ -25,13 +25,14 @@ class ZaloAPI {
         this.context = context
     }
 
-    fun logIn(result: Result, activity: Activity) {
+    fun logIn(result: Result, activity: Activity, type: String?) {
         logout()
         Utilities.genNewCode()
-
+        val typeLogin = if (type == "web") LoginVia.WEB
+        else if (type == "app") LoginVia.APP
+        else LoginVia.APP_OR_WEB
         ZaloSDK.Instance.authenticateZaloWithAuthenType(
-            activity,
-            LoginVia.WEB,
+            activity, typeLogin,
             Utilities.code_challenge,
             object : OAuthCompleteListener() {
                 override fun onAuthenError(response: ErrorResponse) {

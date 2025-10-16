@@ -84,7 +84,7 @@ class FlutterZaloPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
             "logIn" -> {
                 try {
-                    zaloAPI?.logIn(result, activity!!)
+                    zaloAPI?.logIn(result, activity!!,call.argument<String?>("type"))
                 } catch (e: Exception) {
                     result.success(false)
                 }

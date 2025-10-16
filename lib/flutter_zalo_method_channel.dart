@@ -15,8 +15,8 @@ class MethodChannelFlutterZalo extends FlutterZaloAPI {
   }
 
   @override
-  Future<bool?> logIn() async {
-    return await methodChannel.invokeMethod<bool?>('logIn');
+  Future<bool?> logIn({String? type}) async {
+    return await methodChannel.invokeMethod<bool?>('logIn', {"type": type});
   }
 
   @override
@@ -36,7 +36,8 @@ class MethodChannelFlutterZalo extends FlutterZaloAPI {
 
   @override
   Future<Map<String, dynamic>?> getProfile() async {
-    Map<Object?, Object?>? profile = await methodChannel.invokeMethod<Map<Object?, Object?>?>('getProfile');
+    Map<Object?, Object?>? profile =
+        await methodChannel.invokeMethod<Map<Object?, Object?>?>('getProfile');
     return profile?.cast<String, dynamic>();
   }
 
