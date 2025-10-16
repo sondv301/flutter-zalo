@@ -16,20 +16,11 @@ class ZaloAPI {
         logout()
         Utilities.shared.genNewCode()
         ZaloSDK.sharedInstance()?.unauthenticate()
-        var authType: ZAZaloSDKAuthenType = ZAZaloSDKAuthenTypeViaZaloAppAndWebView
-        if let t = type {
-            switch t {
-            case "app":
-                authType = ZAZaloSDKAuthenTypeViaZaloAppOnly
-            case "web":
-                authType = ZAZaloSDKAuthenTypeViaWebViewOnly
-            default:
-                break
-            }
-        }
         if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
             ZaloSDK.sharedInstance()?.authenticateZalo(
-                with: authType,
+                with: type == "app" ? ZAZaloSDKAuthenTypeViaZaloAppOnly :
+                       type == "web" ? ZAZaloSDKAuthenTypeViaWebViewOnly :
+                       ZAZaloSDKAuthenTypeViaZaloAppAndWebView,
                 parentController: rootViewController,
                 codeChallenge: Utilities.shared.code_challenge,
                 extInfo: Constant.EXT_INFO
