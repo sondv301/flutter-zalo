@@ -20,7 +20,7 @@ class ZaloAPI {
             ZaloSDK.sharedInstance()?.authenticateZalo(
                 with: type == "app" ? ZAZaloSDKAuthenTypeViaZaloAppOnly :
                        type == "web" ? ZAZaloSDKAuthenTypeViaWebViewOnly :
-                       ZAZaloSDKAuthenTypeViaZaloAppAndWebView,
+                       ZAZAloSDKAuthenTypeViaZaloAppAndWebView,
                 parentController: rootViewController,
                 codeChallenge: Utilities.shared.code_challenge,
                 extInfo: Constant.EXT_INFO
