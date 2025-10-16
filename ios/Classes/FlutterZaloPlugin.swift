@@ -15,7 +15,8 @@ public class FlutterZaloPlugin: NSObject, FlutterPlugin {
         case "init":
             ZaloAPI.shared.initialize(result: result)
         case "logIn":
-            ZaloAPI.shared.login(result: result)
+            let type = (call.arguments as? [String: Any])?["type"] as? String
+            ZaloAPI.shared.login(result: result, type: type)
         case "isAccessTokenValid":
             result(ZaloAPI.shared.isAccessTokenValid())
         case "getAccessToken":

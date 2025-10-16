@@ -12,13 +12,24 @@ class ZaloAPI {
         result(nil)
     }
     
-    func login(result: @escaping FlutterResult) {
+    func login(result: @escaping FlutterResult, type: String?) {
         logout()
         Utilities.shared.genNewCode()
         ZaloSDK.sharedInstance()?.unauthenticate()
+        var authType: ZAZaloSDKAuthenType = ZAZaloSDKAuthenTypeViaZaloAppAndWebView
+        if let t = type {
+            switch t {
+            case "app":
+                authType = ZAZaloSDKAuthenTypeViaZaloAppOnly
+            case "web":
+                authType = ZAZaloSDKAuthenTypeViaWebViewOnly
+            default:
+                break
+            }
+        }
         if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
             ZaloSDK.sharedInstance()?.authenticateZalo(
-                with: ZAZAloSDKAuthenTypeViaZaloAppAndWebView,
+                with: authType,
                 parentController: rootViewController,
                 codeChallenge: Utilities.shared.code_challenge,
                 extInfo: Constant.EXT_INFO
