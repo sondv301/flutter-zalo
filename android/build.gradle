@@ -28,7 +28,7 @@ apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
 dependencies {
-    def zaloSdkVersion = "4.23.1201"
+    def zaloSdkVersion = "4.1.1101"
     api "me.zalo:sdk-core:$zaloSdkVersion"
     api "me.zalo:sdk-auth:$zaloSdkVersion"
     api "me.zalo:sdk-openapi:$zaloSdkVersion"
