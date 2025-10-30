@@ -28,9 +28,10 @@ apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
 dependencies {
-    api "me.zalo:sdk-core:+"
-    api "me.zalo:sdk-auth:+"
-    api "me.zalo:sdk-openapi:+"
+    def zaloSdkVersion = "4.2.0724"
+    api "me.zalo:sdk-core:$zaloSdkVersion"
+    api "me.zalo:sdk-auth:$zaloSdkVersion"
+    api "me.zalo:sdk-openapi:$zaloSdkVersion"
 
     def preference_version = "1.2.1"
     implementation "androidx.preference:preference-ktx:$preference_version"
